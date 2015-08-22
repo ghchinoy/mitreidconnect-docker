@@ -1,8 +1,6 @@
 # Dockerfile for MITREid Connect
 
-From https://github.com/mitreid-connect
-
-Version 1.2.1 of MITREid Connect.
+This is a Dockerfile that builds an image for the latest version of [MITREid Connect](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server).
 
 For OpenID Connect supported features of this server, see [Supported Features documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Features).
 
@@ -18,9 +16,16 @@ If you'd like to build your own image, see the [Build](#Build) section, below.
 
 #### Server URL
 
-The default `server-config.xml` for the webserver uses `localhost` as the "issuer" URL: `http://localhost/openid-connect-server-webapp/`
+The default `server-config.xml` for the webserver uses `localhost` as the "issuer" host and context url (http://HOST/CONTEXT): 
 
-This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, modify `server-config.xml`'s `issuer` property. Specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`. A sample `server-config.xml` is included in this repository.
+	http://localhost/openid-connect-server-webapp/
+
+This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, modify `server-config.xml`'s `issuer` property. Specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`. 
+
+The file to override is `openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml` and is located in the installation home, `/opt/mitreidc/`.
+
+A sample `server-config.xml` is included in this repository.
+
 
 #### Users
 
@@ -28,10 +33,13 @@ The image uses an in-memory HyperSQL database with default users. To add users, 
 
 ### Example
 
-Example, run image with name `mitreoidc`, exposing port 8080 (as 8080), and mapping the `server-config.xml` to the one in the current directory:
+Run a container with 
+* name `mitreoidc`, 
+* exposing port 8080 (as 8080), 
+* and mapping the `server-config.xml` to the one in the current directory:
 
 	docker run -d --name mitreoidc -p 8080:8080 \
-	-v `pwd`/server-config.xml:/users/mitreidc/oidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml \
+	-v `pwd`/server-config.xml:/opt/mitreidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml \
 	ghchinoy/mitreid-connect
 
 ## Use
@@ -46,7 +54,7 @@ Without any other changes in additional configuration files, the user/password i
 
 Other [endpoints available](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Server-configuration):
 
-Exposed at 8080, as above (in the [Run](#Configure) section), a few useful URLs, relative to "issuer" url:
+Exposed at 8080, as above (in the [Run](#Configure) section), a few useful URLs, relative to "issuer" context path:
 
 * Well-known configuration URL/ Provider url: `/.well-known/openid-configuration`
 * Authorization endpoint: `/authorize`
@@ -65,8 +73,8 @@ See the `Dockerfile.mitreid-connect` for more info on how the image was construc
 
 ## Notes
 
-* the image is pretty fat, could use some slimming (1.225 GB)
-* no need for `sudo` `curl`
-* shorter filepath (no need for `/home/mitreidc`, for example)
+* the image is pretty fat, could use some slimming (1.217 GB)
+* no need for `sudo`
+* probably no need for other projects, for now (client, uma-server*)
 * might be nice to regen jwks as per [docs](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Key-generation) on start of container
 * `mvn jetty:run` downloads jetty, find a way to have that already on the image.
