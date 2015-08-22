@@ -10,7 +10,13 @@ Docker Hub image: https://hub.docker.com/r/ghchinoy/mitreid-connect/
 
 	docker pull ghchinoy/mitreid-connect
 
-The default `server-config.xml` for the webserver uses `localhost` as the "issuer" base host. This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, specify a volume at runtime via the `-v` flag on `docker run`. A sample `server-config.xml` is included in this repository.
+### Configure 
+
+The default `server-config.xml` for the webserver uses `localhost` as the "issuer" URL: `http://localhost/openid-connect-server-webapp/`
+
+This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`. A sample `server-config.xml` is included in this repository.
+
+### Example
 
 Example, run image with name `mitreoidc`, exposing port 8080 (as 8080), and mapping the `server-config.xml` to the one in the current directory:
 
@@ -20,20 +26,25 @@ Example, run image with name `mitreoidc`, exposing port 8080 (as 8080), and mapp
 
 ## Use
 
-See the [MITREid Connect documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki) for more info. For example, [Endpoints available](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Server-configuration).
+See the [MITREid Connect documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki) for complete information. 
 
-Without any other changes, the user/password is the same as the default git repo (`user` / `password`).
+Web interface, where `ISSUER` is `issuer`, as above, user-modifiable via `server-config.xml`:
 
-Exposed at 8080, as above (in the Run section), a few useful URLs, relative to "issuer" url, `IP/openid-connect-server-webapp`:
+	http://ISSUER/openid-connect-server-webapp/
 
-* Web interface - /
-* Well-known configuration URL/ Provider url: /openid-connect-server-webapp/.well-known/openid-configuration
-* Authorization endpoint: /authorize
-* Token endpoint: /token
-* Token introspection: /introspect
-* Token revocation: /revoke
-* JSON Web Key Set (public key): /jwk
-* User info: /userinfo
+Without any other changes in additional configuration files, the user/password is the same as the default git repo (`user` / `password`).
+
+Other [endpoints available](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Server-configuration):
+
+Exposed at 8080, as above (in the Run section), a few useful URLs, relative to "issuer" url:
+
+* Well-known configuration URL/ Provider url: `/.well-known/openid-configuration`
+* Authorization endpoint: `/authorize`
+* Token endpoint: `/token`
+* Token introspection: `/introspect`
+* Token revocation: `/revoke`
+* JSON Web Key Set (public key): `/jwk`
+* User info: `/userinfo`
 
 
 ## Build
