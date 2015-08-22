@@ -1,0 +1,42 @@
+FROM java:latest
+MAINTAINER G. Hussain Chinoy (ghchinoy@gmail.com)
+
+# Prerequisites
+RUN apt-get update && apt-get upgrade -y && apt-get install -y git curl wget sudo && apt-get clean
+
+ENV HOME /users/mitreidc
+
+RUN mkdir -p $HOME && \
+	groupadd -r mitreidc && \
+	useradd -r -s /bin/bash -g mitreidc -d $HOME -c "MitreIDC User" mitreidc && \
+	echo "mitreidc ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+	chown -R mitreidc:mitreidc $HOME
+
+## BouncyCastle
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+RUN cd $JAVA_HOME/lib/ext/ && \
+	wget http://downloads.bouncycastle.org/java/bcprov-ext-jdk15on-152.jar -nv && \
+	cd $JAVA_HOME/lib/security && \
+	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/lib/security/java.security
+
+## Maven 3.3.3
+RUN cd /tmp && \
+	wget http://apache-mirror.rbc.ru/pub/apache/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz -nv && \
+	tar -zxf apache-maven-3.3.3-bin.tar.gz -C /tmp/ && \
+	ln -s /tmp/apache-maven-3.3.3/bin/mvn /usr/local/bin/mvn
+
+# Install
+USER mitreidc
+## make a dir
+RUN mkdir $HOME/oidc
+WORKDIR $HOME/oidc
+## get and build
+RUN git clone https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
+	mvn clean install && mvn package
+WORKDIR $HOME/oidc/openid-connect-server-webapp
+#COPY server-config.xml src/main/webapp/WEB-INF/server-config.xml
+#VOLUME ["$HOME/oidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml"]
+
+EXPOSE 8080
+
+CMD ["mvn", "jetty:run"]
