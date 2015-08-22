@@ -6,6 +6,10 @@ Version 1.2.1 of MITREid Connect
 
 ## Run
 
+Docker Hub image: https://hub.docker.com/r/ghchinoy/mitreid-connect/
+
+	docker pull ghchinoy/mitreid-connect
+
 The default `server-config.xml` for the webserver uses `localhost`. To override this, specify a volume at runtime via `-v`. A sample `server-config.xml` is included in this repository
 
 	docker run -d --name mitreoidc -p 8080:8080 -v `pwd`/server-config.xml:/users/mitreidc/oidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml ghchinoy/mitreid-connect
@@ -22,3 +26,8 @@ See the `Dockerfile.mitreid-connect` for more info on how the image was construc
 
 	docker build --tag ghchinoy/mitreid-connect -f Dockerfile.mitreid-connect .
 
+## Notes
+
+* the image is pretty fat, could use some slimming
+* no need for `sudo` `curl`
+* might be nice to regen jwks as per [docs](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki/Key-generation) on start of container
