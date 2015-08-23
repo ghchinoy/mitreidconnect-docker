@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.3 20150822
+
+* slimmed image slightly to 1.207 GB by removing double maven build
+* added jetty preload
 
 ## 0.0.2 20150822
 

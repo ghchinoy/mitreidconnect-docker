@@ -1,26 +1,24 @@
 FROM java:latest
 MAINTAINER G. Hussain Chinoy (ghchinoy@gmail.com)
 
-# Prerequisites
-RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && apt-get clean
-
 ENV HOME /opt/mitreidc
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 
-RUN mkdir -p $HOME && \
+## Prerequisites: Add user, BouncyCastle & Maven 3.3.3
+RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && apt-get clean && \
+	
+	mkdir -p $HOME && \
 	groupadd -r mitreidc && \
 	useradd -r -s /bin/bash -g mitreidc -d $HOME -c "MitreIDC User" mitreidc && \
 	echo "mitreidc ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-	chown -R mitreidc:mitreidc $HOME 
+	chown -R mitreidc:mitreidc $HOME && \
 
-## BouncyCastle
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-RUN cd $JAVA_HOME/lib/ext/ && \
+	cd $JAVA_HOME/lib/ext/ && \
 	wget http://downloads.bouncycastle.org/java/bcprov-ext-jdk15on-152.jar -nv && \
 	cd $JAVA_HOME/lib/security && \
-	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/lib/security/java.security
+	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/lib/security/java.security && \
 
-## Maven 3.3.3
-RUN cd /tmp && \
+	cd /tmp && \
 	wget http://apache-mirror.rbc.ru/pub/apache/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz -nv && \
 	tar -zxf apache-maven-3.3.3-bin.tar.gz -C /tmp/ && \
 	ln -s /tmp/apache-maven-3.3.3/bin/mvn /usr/local/bin/mvn && \
@@ -31,8 +29,10 @@ USER mitreidc
 WORKDIR $HOME
 ## get and build
 RUN git clone https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
-	mvn clean install && mvn package
+	mvn -Dmaven.javadoc.skip=true -DskipTests clean install
 WORKDIR $HOME/openid-connect-server-webapp
+# Preload Jetty dependencies
+RUN mvn -Djetty.skip=true jetty:run
 
 EXPOSE 8080
 

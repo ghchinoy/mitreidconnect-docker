@@ -18,7 +18,7 @@ If you'd like to build your own image, see the [Build](#Build) section, below.
 
 The default `server-config.xml` for the webserver uses `localhost` as the "issuer" host and context url (http://HOST/CONTEXT): 
 
-	http://localhost/openid-connect-server-webapp/
+	http://localhost:8080/openid-connect-server-webapp/
 
 This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, modify `server-config.xml`'s `issuer` property. Specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`. 
 
@@ -46,9 +46,9 @@ Run a container with
 
 See the [MITREid Connect documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki) for complete information. 
 
-Web interface, where `ISSUER` is `issuer`, as [above](#Configure), user-modifiable via `server-config.xml`:
+Web interface, where `HOST` is `issuer`'s host, as [above](#Configure), user-modifiable via `server-config.xml`:
 
-	http://ISSUER/openid-connect-server-webapp/
+	http://HOST/openid-connect-server-webapp/
 
 Without any other changes in additional configuration files, the user/password is the same as the default git repo (`user` / `password`; there's also an `admin` user).
 
