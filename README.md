@@ -34,13 +34,16 @@ The image uses an in-memory HyperSQL database with default users. To add users, 
 ### Example
 
 Run a container  
+
 * named `mitreoidc`
 * expose port 8080 (as 8080) 
 * map `server-config.xml` to one in the current directory
 
-	docker run -d --name mitreoidc -p 8080:8080 \
-	-v `pwd`/server-config.xml:/opt/mitreidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml \
-	ghchinoy/mitreid-connect
+```
+docker run -d --name mitreoidc -p 8080:8080 \
+-v `pwd`/server-config.xml:/opt/mitreidc/openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml \
+ghchinoy/mitreid-connect
+```
 
 ## Use
 
