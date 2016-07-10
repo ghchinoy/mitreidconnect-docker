@@ -74,6 +74,8 @@ See the `Dockerfile.mitreid-connect` for more info on how the image was construc
 
 	docker build --tag ghchinoy/mitreid-connect -f Dockerfile.mitreid-connect .
 
+See also build.sh which automatically sets the version tag to the version of mitreid-connect.
+
 ## Notes
 
 * the image is pretty fat, could use some slimming (1.207 GB, thanks maven!)
