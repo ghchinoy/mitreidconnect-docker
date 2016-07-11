@@ -2,7 +2,9 @@ FROM maven:latest
 MAINTAINER G. Hussain Chinoy (ghchinoy@gmail.com)
 
 ENV HOME /opt/mitreidc
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+
+# default to the master (development) branch. Override from docker build --build-arg if you want.
+ARG BRANCH=master
 
 ## Prerequisites: Add user, BouncyCastle
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && apt-get clean && \
@@ -13,16 +15,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && 
 	echo "mitreidc ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	chown -R mitreidc:mitreidc $HOME && \
 
-	cd $JAVA_HOME/lib/ext/ && \
+	cd $JAVA_HOME/jre/lib/ext/ && \
 	wget http://downloads.bouncycastle.org/java/bcprov-ext-jdk15on-152.jar -nv && \
-	cd $JAVA_HOME/lib/security && \
-	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/lib/security/java.security
+	cd $JAVA_HOME/jre/lib/security && \
+	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/jre/lib/security/java.security
 
 # Install
 USER mitreidc
 WORKDIR $HOME
-## get and build
-RUN git clone https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
+## get and build the latest production branch
+RUN git clone --branch $BRANCH https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
 	mvn -Dmaven.javadoc.skip=true -DskipTests clean install
 WORKDIR $HOME/openid-connect-server-webapp
 # Preload Jetty dependencies
