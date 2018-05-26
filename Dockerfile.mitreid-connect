@@ -1,10 +1,12 @@
-FROM java:latest
+FROM maven:latest
 MAINTAINER G. Hussain Chinoy (ghchinoy@gmail.com)
 
 ENV HOME /opt/mitreidc
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 
-## Prerequisites: Add user, BouncyCastle & Maven 3.3.3
+# default to the master (development) branch. Override from docker build --build-arg if you want.
+ARG BRANCH=master
+
+## Prerequisites: Add user, BouncyCastle
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && apt-get clean && \
 	
 	mkdir -p $HOME && \
@@ -13,22 +15,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y git wget sudo && 
 	echo "mitreidc ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	chown -R mitreidc:mitreidc $HOME && \
 
-	cd $JAVA_HOME/lib/ext/ && \
+	cd $JAVA_HOME/jre/lib/ext/ && \
 	wget http://downloads.bouncycastle.org/java/bcprov-ext-jdk15on-152.jar -nv && \
-	cd $JAVA_HOME/lib/security && \
-	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/lib/security/java.security && \
-
-	cd /tmp && \
-	wget http://apache-mirror.rbc.ru/pub/apache/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz -nv && \
-	tar -zxf apache-maven-3.3.3-bin.tar.gz -C /tmp/ && \
-	ln -s /tmp/apache-maven-3.3.3/bin/mvn /usr/local/bin/mvn && \
-	rm -rf apache-maven-3.3.3-bin.tar.gz
+	cd $JAVA_HOME/jre/lib/security && \
+	echo 'security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' >> $JAVA_HOME/jre/lib/security/java.security
 
 # Install
 USER mitreidc
 WORKDIR $HOME
-## get and build
-RUN git clone https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
+## get and build the latest production branch
+RUN git clone --branch $BRANCH https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server.git . && \
 	mvn -Dmaven.javadoc.skip=true -DskipTests clean install
 WORKDIR $HOME/openid-connect-server-webapp
 # Preload Jetty dependencies

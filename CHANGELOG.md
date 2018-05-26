@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.4 20160710
+
+* Change to use FROM maven:latest
+* Added a build.sh script that tags the current mitreid-connect version as well as :latest.
+
 ## 0.0.3 20150822
 
 * slimmed image slightly to 1.207 GB by removing double maven build
