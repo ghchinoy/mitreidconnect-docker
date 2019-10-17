@@ -12,15 +12,15 @@ Obtain the Docker image from Docker Hub image: https://hub.docker.com/r/ghchinoy
 
 If you'd like to build your own image, see the [Build](#build) section, below.
 
-### Configure 
+### Configure
 
 #### Server URL
 
-The default `server-config.xml` for the webserver uses `localhost` as the "issuer" host and context url (http://HOST/CONTEXT): 
+The default `server-config.xml` for the webserver uses `localhost` as the "issuer" host and context url (http://HOST/CONTEXT):
 
 	http://localhost:8080/openid-connect-server-webapp/
 
-This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, modify `server-config.xml`'s `issuer` property. Specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`. 
+This will need to be overridden, otherwise the server will reference itself at `localhost` and not the expected Docker IP. To override this, modify `server-config.xml`'s `issuer` property. Specify the path to a custom `server-config.xml` file at runtime via the `-v` flag on `docker run`.
 
 The file to override is `openid-connect-server-webapp/src/main/webapp/WEB-INF/server-config.xml` and is located in the installation home, `/opt/mitreidc/`.
 
@@ -36,8 +36,8 @@ The image uses an in-memory HyperSQL database with default users. To add users, 
 Run a container  
 
 * named `mitreoidc`
-* expose port 8080 (as 8080) 
-* map `server-config.xml` to one in the current directory
+* expose port 8080 (as 8080)
+* map `server-config.xml` to one in the current directory. You must have a `server-config.xml`. You could use the sample file included in this repository.
 
 ```
 docker run -d --name mitreoidc -p 8080:8080 \
@@ -47,7 +47,7 @@ ghchinoy/mitreid-connect
 
 ## Use
 
-See the [MITREid Connect documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki) for complete information. 
+See the [MITREid Connect documentation](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/wiki) for complete information.
 
 Web interface, where `HOST` is `issuer`'s host, as [above](#configure), user-modifiable via `server-config.xml`:
 
